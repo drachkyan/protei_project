@@ -93,12 +93,25 @@ void core_input_vector(const Types type, void* &vectorPtr) {
     });
 }
 
+void toLowerCase(char* c) {
+    if (!c) {
+        return;
+    }
+    size_t i = 0;
+    while (c[i] != '\0') {
+        c[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(c[i])));
+        i++;
+    }
+}
+
+
 void mainLoop() {
     constexpr u_int16_t BUFFER_SIZE  = 256, ALIAS_SIZE = 10;
     char command[BUFFER_SIZE], alias[ALIAS_SIZE];
     auto type = Types::None;
     printMenu();
     std::cin >> command;
+    toLowerCase(command);
     void* vectorPtr = nullptr;
     while (hash(command) != hash("quit")) {
         switch (hash(command)) {

@@ -4,8 +4,8 @@
 
 
 
-
 int main(const int argc, char* argv[]) {
+
     App* app = nullptr;
     app = parseCommandArgs(argc, argv);
     if (app) {

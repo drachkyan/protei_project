@@ -8,3 +8,4 @@ TODO.md
 Testing
 cmake-build-debug-wsl
 .cmake
+compile_commands.json

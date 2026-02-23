@@ -18,7 +18,7 @@ cpplint --recursive --exclude=build/* --exclude=CMakeFiles/* --filter=-legal/cop
 
 
 ```
-chmod -x test.sh
+chmod +x test.sh
 ./test.sh
 ```
 

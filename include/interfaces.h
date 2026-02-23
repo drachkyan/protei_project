@@ -1,8 +1,6 @@
-#ifndef UTILS_H
-#define UTILS_H
 
-#include <iostream>
-
+#ifndef INCLUDE_INTERFACES_H_
+#define INCLUDE_INTERFACES_H_
 
 enum class Role{
     CLIENT,
@@ -19,27 +17,15 @@ struct ipAddress {
         b1(b1), b2(b2), b3(b3), b4(b4) {}
 };
 
-ipAddress* parseIpAddress(const char* str);
-
-std::ostream& operator<<(std::ostream& stream, const ipAddress& addr);
-
-
 struct App {
     unsigned short port;
     ipAddress* addr;
     const char* lib;
     Role role;
-    long i;
+    int64_t i;
     ~App(){
         delete addr;
     }
 };
 
-constexpr unsigned int hash(const char* str);
-
-long parsePort(const char* str);
-
-App* parseCommandArgs(int argc, char*argv[]);
-
-
-#endif // UTILS_H
+#endif  // INCLUDE_INTERFACES_H_

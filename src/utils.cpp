@@ -1,13 +1,7 @@
 #include "../include/utils.h"
 #include <iostream>
 
-constexpr unsigned int hash(const char* str) {
-    unsigned int h = 0;
-    while (*str) {
-        h = h * 31 + *str++;
-    }
-    return h;
-}
+
 
 ipAddress* parseIpAddress(const char* str) {
     unsigned char bytes[4];
@@ -130,3 +124,11 @@ App* parseCommandArgs(const int argc, char*argv[]) {
     return app;
 }
 
+void testInput(const App* app) {
+    std::cout << "Айпи адрес " << *app->addr << std::endl;
+    std::cout << "Порт " << app->port << std::endl;
+    std::cout << "Библиотека " << app->lib << std::endl;
+    std::cout << "I " << app->i << std::endl;
+    const char* role = app->role == Role::CLIENT ? "Client" : "Admin";
+    std::cout << "Роль " << role << std::endl;
+}

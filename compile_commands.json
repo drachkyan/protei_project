@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/mnt/c/Users/vova/Desktop/protei_hw",
+  "command": "/usr/bin/c++   -g -fdiagnostics-color=always -o CMakeFiles/myApp.dir/main.cpp.o -c /mnt/c/Users/vova/Desktop/protei_hw/main.cpp",
+  "file": "/mnt/c/Users/vova/Desktop/protei_hw/main.cpp",
+  "output": "CMakeFiles/myApp.dir/main.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/vova/Desktop/protei_hw",
+  "command": "/usr/bin/c++   -g -fdiagnostics-color=always -o CMakeFiles/myApp.dir/utils.cpp.o -c /mnt/c/Users/vova/Desktop/protei_hw/utils.cpp",
+  "file": "/mnt/c/Users/vova/Desktop/protei_hw/utils.cpp",
+  "output": "CMakeFiles/myApp.dir/utils.cpp.o"
+}
+]

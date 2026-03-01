@@ -2,6 +2,8 @@
 #ifndef INCLUDE_INTERFACES_H_
 #define INCLUDE_INTERFACES_H_
 
+#include <iostream>
+
 enum class Role{
     CLIENT,
     ADMIN

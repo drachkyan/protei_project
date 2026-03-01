@@ -1,6 +1,5 @@
 #include "../include/core.h"
 #include <iostream>
-#include "../include/utils.h"
 #include "../include/vector.hpp"
 
 
@@ -13,6 +12,13 @@ void core_delete_vector(Types type, void* vectorPtr) {
     });
 }
 
+constexpr int hash(const char* buffer) {
+    int res =1;
+    for (int i = 0; buffer[i] != '\0'; i++) {
+        res+=buffer[i]*31;
+    }
+    return res;
+}
 
 Types input_type(Types type, void* &vectorPtr) {
     std::cout << "Введите тип\n";

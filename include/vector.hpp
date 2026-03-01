@@ -76,7 +76,7 @@ void print_vector(const Vector<T>&vector) {
             std::cout << std::endl;
         }
     }
-}а
+}
 
 // диспатчер для того чтобы вызывать функции для
 // любых типов данных по войд поинтеру

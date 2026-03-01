@@ -1,20 +1,15 @@
 #include <iostream>
-#include "../include/utils.h"
-#include "../include/core.h"
 
+#include "../include/AppSettings.h"
+#include "../include/core.h"
+#include <spdlog/spdlog.h>
 
 
 int main(const int argc, char* argv[]) {
-
-    App* app = nullptr;
-    app = parseCommandArgs(argc, argv);
-    if (app) {
-        testInput(app);
-    }
-    delete app;
-    mainLoop();
-
-
+    AppSettings app;
+    spdlog::info("конструктор сделался");
+    app.parseCommandArgs(argc, argv);
+    app.printSettings();
     // Vector<short> vector;
     // print_vector(vector);
     // input_vector(vector);

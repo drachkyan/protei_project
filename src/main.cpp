@@ -1,23 +1,16 @@
 #include <iostream>
-#include "../include/utils.h"
-#include "../include/core.h"
 
-
+#include "../include/AppSettings.h"
+#include "../include/Menu.h"
+#include "../include/DataPool.h"
 
 int main(const int argc, char* argv[]) {
+    AppSettings app;
+    app.parseCommandArgs(argc, argv);
+    app.printSettings();
 
-    App* app = nullptr;
-    app = parseCommandArgs(argc, argv);
-    if (app) {
-        testInput(app);
-    }
-    delete app;
-    mainLoop();
-
-
-    // Vector<short> vector;
-    // print_vector(vector);
-    // input_vector(vector);
-    // print_vector(vector);
+    DataPool data;
+    Menu menu(&data);
+    menu.run();
     return 0;
 }

@@ -1,16 +1,29 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
+
+include(FetchContent)
 
 project(myApp)
 
+FetchContent_Declare(spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG v1.16.0)
+
+FetchContent_MakeAvailable(spdlog)
+
 set(SOURCE_LIST
         src/main.cpp
-        include/utils.h
-        src/utils.cpp
         include/interfaces.h
-        include/core.h
-        src/core.cpp
         include/vector.hpp
+        src/AppSettings.cpp
+        include/AppSettings.h
+        src/DataPool.cpp
+        include/DataPool.h
+        src/Menu.cpp
+        include/Menu.h
 )
 
+set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(${PROJECT_NAME} ${SOURCE_LIST})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)

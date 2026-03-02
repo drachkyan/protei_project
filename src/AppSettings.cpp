@@ -1,7 +1,3 @@
-//
-// Created by vova on 01.03.2026.
-//
-
 #include <utility>
 #include <iostream>
 #include <unordered_map>
@@ -206,8 +202,4 @@ void AppSettings::parseCommandArgs(const int argc, char *argv[]) {
         char* value = argv[j + 1];
         dispatchCommand(flag, value);
     }
-    if (!verifySettings()) {
-        spdlog::info("Не удалось создать соединение - недостаточно нужных параметров запуска");
-    }
-
 }

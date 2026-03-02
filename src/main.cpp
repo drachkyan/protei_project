@@ -1,18 +1,16 @@
 #include <iostream>
 
 #include "../include/AppSettings.h"
-#include "../include/core.h"
-#include <spdlog/spdlog.h>
-
+#include "../include/Menu.h"
+#include "../include/DataPool.h"
 
 int main(const int argc, char* argv[]) {
     AppSettings app;
-    spdlog::info("конструктор сделался");
     app.parseCommandArgs(argc, argv);
     app.printSettings();
-    // Vector<short> vector;
-    // print_vector(vector);
-    // input_vector(vector);
-    // print_vector(vector);
+
+    DataPool data;
+    Menu menu(&data);
+    menu.run();
     return 0;
 }

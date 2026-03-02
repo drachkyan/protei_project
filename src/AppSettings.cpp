@@ -51,6 +51,31 @@ void AppSettings::initRoleMap() {
     roleMap["Admin"] = Role::ADMIN;
 }
 
+bool AppSettings::verifySettings() {
+    if (role==Role::NONE) {
+        spdlog::info("Не задана роль");
+    }
+    if (username.empty()) {
+        spdlog::info("Не задано имя пользователя");
+    }
+    if (lib.empty()) {
+        spdlog::info("Не задана библиотека");
+    }
+    if (i==-1) {
+        spdlog::info("Не задан флаг -i");
+    }
+    if (!addr) {
+        spdlog::info("Не задан ip address");
+        return false;
+    }
+    if (port == 0) {
+        spdlog::info("Не задан порт");
+        return false;
+    }
+    return true;
+
+}
+
 void AppSettings::setRole(Role role_) {
     this->role = role_;
 }
@@ -181,4 +206,8 @@ void AppSettings::parseCommandArgs(const int argc, char *argv[]) {
         char* value = argv[j + 1];
         dispatchCommand(flag, value);
     }
+    if (!verifySettings()) {
+        spdlog::info("Не удалось создать соединение - недостаточно нужных параметров запуска");
+    }
+
 }

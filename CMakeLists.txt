@@ -13,11 +13,13 @@ FetchContent_MakeAvailable(spdlog)
 set(SOURCE_LIST
         src/main.cpp
         include/interfaces.h
-        include/core.h
-        src/core.cpp
         include/vector.hpp
         src/AppSettings.cpp
         include/AppSettings.h
+        src/DataPool.cpp
+        include/DataPool.h
+        src/Menu.cpp
+        include/Menu.h
 )
 
 set(CMAKE_BUILD_TYPE Debug)

@@ -41,6 +41,8 @@ class AppSettings {
     void initFuncMap();
     void initRoleMap();
 
+    bool verifySettings();
+
     void dispatchCommand(const char* command, char* arg);
 
     void setRole(Role role_);

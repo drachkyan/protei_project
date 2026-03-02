@@ -1,7 +1,3 @@
-//
-// Created by vova on 01.03.2026.
-//
-
 #include "../include/DataPool.h"
 
 #include "spdlog/spdlog.h"

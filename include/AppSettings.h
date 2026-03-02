@@ -41,7 +41,6 @@ class AppSettings {
     void initFuncMap();
     void initRoleMap();
 
-    bool verifySettings();
 
     void dispatchCommand(const char* command, char* arg);
 
@@ -62,6 +61,7 @@ public:
     ~AppSettings(){
         delete addr;
     }
+    bool verifySettings();
     AppSettings(uint16_t port, ipAddress* addr, std::string lib, Role role, int64_t i, std::string username_);
     AppSettings();
     void printSettings() const;

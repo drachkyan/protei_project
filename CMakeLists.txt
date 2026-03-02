@@ -20,6 +20,13 @@ set(SOURCE_LIST
         include/DataPool.h
         src/Menu.cpp
         include/Menu.h
+        include/Test.h
+        src/ConnectionTest.cpp
+        include/ConnectionTest.h
+        src/ResourceTest.cpp
+        include/ResourceTest.h
+        include/utils.h
+        src/utils.cpp
 )
 
 set(CMAKE_BUILD_TYPE Debug)

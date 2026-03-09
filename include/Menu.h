@@ -7,7 +7,7 @@
 #include <utility>
 #include <iostream>
 #include "../include/DataPool.h"
-
+#include <memory>
 
 using menu_func_type = std::function<u_int16_t()>;
 using creator_func_type = std::function<void*()>;
@@ -21,14 +21,15 @@ public:
     action (std::move(action_)), name (std::move(name_)), description(std::move(description_)) {};
 
     friend std::ostream& operator<<(std::ostream& os, const MenuItem& item) {
-        os << item.name << " - " << item.description;
+        if (item.description.empty()) { return os; }
+        os << item.name << " - " << item.description << std::endl;
         return os;
     }
 };
 
 
 class Menu {
-    DataPool* data;
+    std::unique_ptr<DataPool> data;
     std::string alias;
     std::unordered_map<std::string, MenuItem> menuItems;
     std::unordered_map<std::string, Types> typesMap;
@@ -48,12 +49,12 @@ class Menu {
     static void quit();
 public:
 
-    Menu(DataPool *data_);
+    Menu(std::unique_ptr<DataPool> &data_);
 
     friend std::ostream& operator<<(std::ostream& os, const Menu& menu) {
         os << "======== МЕНЮ =========" << std::endl;
         for (const auto& item: menu.menuItems) {
-            os << item.second << std::endl;
+            os << item.second;
         }
         return os;
     }

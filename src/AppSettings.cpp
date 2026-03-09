@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <spdlog/spdlog.h>
 #include "../include/AppSettings.h"
-
+#include "../include/NetworkAddress.h"
 
 std::ostream& operator<<(std::ostream& stream, const ipAddress& addr) {
     stream
@@ -16,8 +16,8 @@ std::ostream& operator<<(std::ostream& stream, const ipAddress& addr) {
 }
 
 
-AppSettings::AppSettings(uint16_t port_, ipAddress* addr_, std::string lib_, Role role_, int64_t i_,std::string username_):
-port(port_), addr(addr_), lib(std::move(lib_)), role(role_), i(i_), username(std::move(username_)){
+AppSettings::AppSettings(std::string port_, std::string addr_, std::string lib_, Role role_, int64_t i_,std::string username_):
+port(std::move(port_)), addr(std::move(addr_)), lib(std::move(lib_)), role(role_), i(i_), username(std::move(username_)){
     initFuncMap();
     initRoleMap();
 }
@@ -25,8 +25,8 @@ port(port_), addr(addr_), lib(std::move(lib_)), role(role_), i(i_), username(std
 AppSettings::AppSettings() {
     initFuncMap();
     initRoleMap();
-    port=0;
-    addr=nullptr;
+    port="";
+    addr="";
     lib="";
     role=Role::CLIENT;
     i=0;
@@ -47,7 +47,7 @@ void AppSettings::initRoleMap() {
     roleMap["Admin"] = Role::ADMIN;
 }
 
-bool AppSettings::verifySettings() {
+bool AppSettings::verifySettings() const {
     if (role==Role::NONE) {
         spdlog::info("Не задана роль");
     }
@@ -60,11 +60,11 @@ bool AppSettings::verifySettings() {
     if (i==-1) {
         spdlog::info("Не задан флаг -i");
     }
-    if (!addr) {
+    if (addr.empty()) {
         spdlog::info("Не задан ip address");
         return false;
     }
-    if (port == 0) {
+    if (port.empty()) {
         spdlog::info("Не задан порт");
         return false;
     }
@@ -76,11 +76,11 @@ void AppSettings::setRole(Role role_) {
     this->role = role_;
 }
 
-void AppSettings::setAddr(ipAddress *addr_) {
+void AppSettings::setAddr(std::string addr_) {
     this->addr = addr_;
 }
 
-void AppSettings::setPort(uint16_t port_) {
+void AppSettings::setPort(std::string port_) {
     this->port = port_;
 }
 
@@ -92,6 +92,14 @@ void AppSettings::setLib(std::string lib_) {
     this->lib = std::move(lib_);
 }
 
+void AppSettings::parseIpAddress(const char *str) {
+    this->addr = str;
+}
+
+void AppSettings::parsePort(const char *str) {
+    this->port = str;
+}
+
 void AppSettings::dispatchCommand(const char *command, char *arg) {
     auto it = funcMap.find(command);
     if (it != funcMap.end()) {
@@ -101,53 +109,7 @@ void AppSettings::dispatchCommand(const char *command, char *arg) {
     spdlog::info("Неизвестный флаг");
 }
 
-void AppSettings::parsePort(const char *str) {
-    char* end = nullptr;
-    const int64_t tempPort = strtol(str, &end, 10);
-    if (*end != '\0') {
-        spdlog::info("Ошибка при парсинге порта");
-        return;
-    }
-    if (constexpr u_int64_t MAX_PORT = 65535;
-        tempPort > MAX_PORT) {
-        spdlog::info("Порт должен быть не больше 65535");
-        return ;
-        }
-    this->setPort(tempPort);
-}
 
-void AppSettings::parseIpAddress(const char *str) {
-    unsigned char bytes[4];
-    char*end = nullptr;
-    size_t counter = 0;
-
-    for (int64_t i_ = std::strtol(str, &end, 10);
-        str != end;
-        i_ = std::strtol(str, &end, 10)) {
-        if (constexpr int64_t MAX_BYTE = 255; i_ < 0 || i_ > MAX_BYTE) {
-            break;
-        }
-        bytes[counter] = i_;
-
-        str = end;
-        if (*str == '.') {
-            ++str;
-        }
-        counter++;
-
-        if (counter == 4) {
-            break;
-        }
-        }
-    if (counter != 4 || *end != '\0') {
-        spdlog::info("Ошибка во время парсинга айпи адреса");
-        return;
-    }
-    this->setAddr( new ipAddress(bytes[0],
-        bytes[1],
-        bytes[2],
-        bytes[3]));
-}
 
 void AppSettings::parseI(const char *str) {
     char* end = nullptr;
@@ -183,8 +145,7 @@ void AppSettings::parseLib(const char *str) {
 void AppSettings::printSettings() const {
     std::cout << "Библиотека "<< this->lib << std::endl;
     std::cout << "Имя " << this->username << std::endl;
-    std::cout << "Айпи адрес " << *this->addr << std::endl;
-    std::cout << "Порт " << this->port << std::endl;
+    std::cout << "Сетевой адрес " << *(this->netAddr) << std::endl;
     std::cout << "I " << this->i << std::endl;
 }
 
@@ -202,4 +163,9 @@ void AppSettings::parseCommandArgs(const int argc, char *argv[]) {
         char* value = argv[j + 1];
         dispatchCommand(flag, value);
     }
+    if (verifySettings()) {
+        this->netAddr = std::make_unique<NetworkAddress>(this->port, this->addr);
+        return;
+    }
+    spdlog::info("Соединение не может быть установлено - не задан айпи адрес или порт");
 }

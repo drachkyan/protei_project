@@ -79,6 +79,9 @@ void Menu::initMenuItems() {
     menuItems.insert({"quit",
         MenuItem([](){Menu::quit();return 1;},"quit","Выход из программы")});
 
+    menuItems.insert({"exit",
+        MenuItem([](){Menu::quit();return 1;},"","")});
+
     menuItems.insert({"add_vector",
         MenuItem([this](){this->addVector();return 0;},"add_vector","Добавить вектор")});
 
@@ -113,7 +116,8 @@ void Menu::initCreators() {
     vectorCreators[Types::DOUBLE] = []() -> void* { return new Vector<double>; };
 }
 
-Menu::Menu(DataPool*data_):data(data_) {
+Menu::Menu(std::unique_ptr<DataPool> &data_) {
+    this->data = std::move(data_);
     initTypes();
     initMenuItems();
     initCreators();

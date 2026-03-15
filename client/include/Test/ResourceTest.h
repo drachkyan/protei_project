@@ -1,8 +1,7 @@
 #ifndef INCLUDE_RESOURCE_TEST_H
 #define INCLUDE_RESOURCE_TEST_H
 
-#include "../include/Test.h"
-#include <unordered_map>
+#include "Test.h"
 #include <string>
 #include <vector>
 

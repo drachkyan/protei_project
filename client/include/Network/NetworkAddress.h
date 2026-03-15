@@ -3,14 +3,23 @@
 
 #include <memory>
 #include <string>
+
 struct IpAddress {
     const uint8_t b1;
     const uint8_t b2;
     const uint8_t b3;
     const uint8_t b4;
+
     IpAddress(const uint8_t b1, const uint8_t b2,
         const uint8_t b3, const uint8_t b4):
         b1(b1), b2(b2), b3(b3), b4(b4) {}
+
+    std::string toString() const {
+        return std::to_string(b1) + "." +
+               std::to_string(b2) + "." +
+               std::to_string(b3) + "." +
+               std::to_string(b4);
+    }
 };
 
 class NetworkAddress {
@@ -27,7 +36,8 @@ public:
         addr(addr_), port(port_) {}
 
     NetworkAddress(const std::string& port_, const std::string& addr_);
-
+    uint16_t getPort() const {return port;} ;
+    std::string getIpAddress() const {return addr->toString();}
     NetworkAddress(uint32_t hexAddr_, uint16_t port_);
 };
 

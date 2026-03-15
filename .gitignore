@@ -8,10 +8,14 @@ Testing
 compile_commands.json
 cmake-build-*/
 build/
-
+bin/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
-
+lib/
+unit_tests
+CTestTestfile.cmake
 _deps/
+myApp_client
+myApp_server

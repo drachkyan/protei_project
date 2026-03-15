@@ -13,15 +13,7 @@
 
 using func_type = std::function<void(char*)>;
 
-struct ipAddress {
-    unsigned char b1;
-    unsigned char b2;
-    unsigned char b3;
-    unsigned char b4;
-    ipAddress(const unsigned char b1, const unsigned char b2,
-        const unsigned char b3, const unsigned char b4):
-        b1(b1), b2(b2), b3(b3), b4(b4) {}
-};
+
 enum class Role{
     CLIENT,
     ADMIN,
@@ -31,7 +23,7 @@ enum class Role{
 class AppSettings {
     std::string port;
     std::string addr;
-    std::unique_ptr<NetworkAddress> netAddr;
+    std::shared_ptr<NetworkAddress> netAddr;
     std::string lib;
     Role role;
     int64_t i;
@@ -67,6 +59,7 @@ public:
     void printSettings() const;
     void setUsername(std::string username_);
     void parseCommandArgs(int argc, char*argv[]);
+    std::shared_ptr<NetworkAddress> getNetworkAddress(){return netAddr;};
 };
 
 

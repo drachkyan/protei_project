@@ -1,4 +1,4 @@
-#include "../include/NetworkAddress.h"
+#include "../../include/Network/NetworkAddress.h"
 
 #include <string>
 #include "spdlog/spdlog.h"

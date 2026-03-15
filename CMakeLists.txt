@@ -4,48 +4,69 @@ include(FetchContent)
 
 project(myApp)
 
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-
 set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_STANDARD 17)
 
 FetchContent_Declare(spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
         GIT_TAG v1.16.0)
-
 FetchContent_MakeAvailable(spdlog)
 
 FetchContent_Declare(googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG v1.16.0)
-
 FetchContent_MakeAvailable(googletest)
 
-set(LIB_SOURCES
-        include/interfaces.h
-        include/vector.hpp
-        src/AppSettings.cpp
-        include/AppSettings.h
-        src/DataPool.cpp
-        include/DataPool.h
-        src/Menu.cpp
-        include/Menu.h
-        include/Test.h
-        src/ConnectionTest.cpp
-        include/ConnectionTest.h
-        src/ResourceTest.cpp
-        include/ResourceTest.h
-        include/utils.h
-        src/utils.cpp
-        src/NetworkAddress.cpp
-        include/NetworkAddress.h
+FetchContent_Declare(json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.3)
+FetchContent_MakeAvailable(json)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(URING REQUIRED liburing)
+
+# ===============
+set(CLIENT_SOURCES
+        client/src/Network/AppSettings.cpp
+        client/src/Model/Menu.cpp
+        client/src/Test/ConnectionTest.cpp
+        client/src/Test/ResourceTest.cpp
+        client/src/utils/utils.cpp
+        client/src/Network/NetworkAddress.cpp
+        client/src/Model/VectorFactory.cpp
 )
 
-add_executable(${PROJECT_NAME} src/main.cpp ${LIB_SOURCES})
-target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+# ================
+set(SERVER_SOURCES
+        server/src/network/Server.cpp
+        client/src/Model/VectorFactory.cpp
+        client/include/Model/vector.hpp
+        server/include/utils/utils.h
+        server/src/utils/utils.cpp
+)
 
+# =================
+add_executable(myApp_client client/src/client_main.cpp ${CLIENT_SOURCES})
+target_include_directories(myApp_client PRIVATE client/include)
+target_link_libraries(myApp_client PRIVATE spdlog::spdlog)
+target_link_libraries(myApp_client PRIVATE nlohmann_json::nlohmann_json)
+
+
+# =============
+add_executable(myApp_server server/src/server_main.cpp ${SERVER_SOURCES})
+target_include_directories(myApp_server PRIVATE server/include)
+target_link_libraries(myApp_server PRIVATE spdlog::spdlog ${URING_LIBRARIES})
+target_include_directories(myApp_server PRIVATE ${URING_INCLUDE_DIRS})
+target_link_libraries(myApp_server PRIVATE nlohmann_json::nlohmann_json)
+
+# =================
 enable_testing()
-
-add_executable(unit_tests test/test.cpp ${LIB_SOURCES})
-target_include_directories(unit_tests PRIVATE ${googletest_SOURCE_DIR}/googletest/include)
-target_link_libraries(unit_tests PRIVATE GTest::gtest GTest::gtest_main spdlog::spdlog)
+add_executable(unit_tests test/test.cpp ${CLIENT_SOURCES})
+target_include_directories(unit_tests PRIVATE
+        client/include
+        ${googletest_SOURCE_DIR}/googletest/include)
+target_link_libraries(unit_tests PRIVATE
+        GTest::gtest
+        GTest::gtest_main
+        spdlog::spdlog)
 add_test(NAME unit_tests COMMAND unit_tests)

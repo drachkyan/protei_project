@@ -2,10 +2,10 @@
 #include <iostream>
 #include <unordered_map>
 #include <spdlog/spdlog.h>
-#include "../include/AppSettings.h"
-#include "../include/NetworkAddress.h"
+#include "../../include/Network/AppSettings.h"
+#include "../../include/Network/NetworkAddress.h"
 
-std::ostream& operator<<(std::ostream& stream, const ipAddress& addr) {
+std::ostream& operator<<(std::ostream& stream, const IpAddress& addr) {
     stream
     << static_cast<u_int16_t>(addr.b1) <<'.'
     << static_cast<u_int16_t>(addr.b2) << '.'
@@ -77,11 +77,11 @@ void AppSettings::setRole(Role role_) {
 }
 
 void AppSettings::setAddr(std::string addr_) {
-    this->addr = addr_;
+    this->addr = std::move(addr_);
 }
 
 void AppSettings::setPort(std::string port_) {
-    this->port = port_;
+    this->port = std::move(port_);
 }
 
 void AppSettings::setI(int64_t i_) {
@@ -143,6 +143,10 @@ void AppSettings::parseLib(const char *str) {
 }
 
 void AppSettings::printSettings() const {
+    if (!verifySettings()) {
+        spdlog::info("Отсутствуют нужные параметры");
+        return;
+    }
     std::cout << "Библиотека "<< this->lib << std::endl;
     std::cout << "Имя " << this->username << std::endl;
     std::cout << "Сетевой адрес " << *(this->netAddr) << std::endl;
@@ -164,7 +168,7 @@ void AppSettings::parseCommandArgs(const int argc, char *argv[]) {
         dispatchCommand(flag, value);
     }
     if (verifySettings()) {
-        this->netAddr = std::make_unique<NetworkAddress>(this->port, this->addr);
+        this->netAddr = std::make_shared<NetworkAddress>(this->port, this->addr);
         return;
     }
     spdlog::info("Соединение не может быть установлено - не задан айпи адрес или порт");

@@ -5,9 +5,12 @@
 #include <unordered_map>
 #include <string>
 #include <utility>
-#include <iostream>
-#include "../include/DataPool.h"
-#include <memory>
+#include <queue>
+#include <variant>
+#include "vector.hpp"
+#include "../../include/Network/AppSettings.h"
+#include "../../include/Network/NetworkClient.h"
+
 
 using menu_func_type = std::function<u_int16_t()>;
 using creator_func_type = std::function<void*()>;
@@ -29,27 +32,21 @@ public:
 
 
 class Menu {
-    std::unique_ptr<DataPool> data;
+    std::queue<AnyVector> data;
+    std::unique_ptr<NetworkClient> api;
     std::string alias;
     std::unordered_map<std::string, MenuItem> menuItems;
-    std::unordered_map<std::string, Types> typesMap;
-    std::unordered_map<Types, creator_func_type> vectorCreators;
-
+    std::shared_ptr<AppSettings> app{};
     void initMenuItems();
-    void initTypes();
-    void initCreators();
 
-    Types inputType();
-    void* createVectorByType(Types type);
-    static void inputVector(Types type, void* &vectorPtr);
-
-    void printVector() const;
+    static void inputVector(AnyVector &vector);
+    void sendVector();
+    void printVector();
     void addVector();
-    void inputAlias();
     static void quit();
 public:
 
-    Menu(std::unique_ptr<DataPool> &data_);
+    Menu(const std::shared_ptr<AppSettings> &app_);
 
     friend std::ostream& operator<<(std::ostream& os, const Menu& menu) {
         os << "======== МЕНЮ =========" << std::endl;

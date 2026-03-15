@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
-#include "../include/vector.hpp"
-#include "../include/DataPool.h"
-#include "../include/NetworkAddress.h"
-#include "../include/AppSettings.h"
+#include "../include/Model/vector.hpp"
+#include "../include/Network/NetworkAddress.h"
+#include "../include/Network/AppSettings.h"
 #include <spdlog/spdlog.h>
 
 TEST(VectorTest, DefaultDimensionsAreTwo) {
@@ -77,94 +76,6 @@ TEST(VectorTest, UnsignedTypesWork) {
         << "Записали 65535 (uint16_t max), но прочитали " << v.arr[0][0][0][0];
 }
 
-TEST(DataPoolTest, FirstOnEmptyPoolReturnsNullptr) {
-    DataPool pool;
-    auto [ptr, type] = pool.first();
-    EXPECT_EQ(ptr, nullptr)
-        << "first() на пустом пуле должен вернуть nullptr, но вернул ненулевой указатель";
-    EXPECT_EQ(type, Types::None)
-        << "first() на пустом пуле должен вернуть Types::None";
-}
-
-TEST(DataPoolTest, InsertAndRetrieveSingleItem) {
-    DataPool pool;
-    auto* v = new Vector<int>(1, 1, 1, 1);
-    v->arr[0][0][0][0] = 7;
-    pool.insert(v, Types::INT_T);
-    auto [ptr, type] = pool.first();
-    EXPECT_EQ(type, Types::INT_T)
-        << "Тип извлечённого элемента должен быть INT_T";
-    ASSERT_NE(ptr, nullptr)
-        << "Указатель из first() не должен быть nullptr после insert()";
-    auto* recovered = static_cast<Vector<int>*>(ptr);
-    EXPECT_EQ(recovered->arr[0][0][0][0], 7)
-        << "Значение в извлечённом векторе должно быть 7, а равно "
-        << recovered->arr[0][0][0][0];
-    auto [ptr2, type2] = pool.first();
-    EXPECT_EQ(ptr2, nullptr)
-        << "После единственного first() пул должен быть пуст — следующий first() должен вернуть nullptr";
-    delete recovered;
-}
-
-TEST(DataPoolTest, FIFOOrderPreserved) {
-    DataPool pool;
-    auto* v1 = new Vector<double>(1, 1, 1, 1);
-    auto* v2 = new Vector<float>(1, 1, 1, 1);
-    v1->arr[0][0][0][0] = 1.1;
-    v2->arr[0][0][0][0] = 2.2f;
-    pool.insert(v1, Types::DOUBLE);
-    pool.insert(v2, Types::FLOAT);
-    auto [p1, t1] = pool.first();
-    EXPECT_EQ(t1, Types::DOUBLE)
-        << "Первым вставлен DOUBLE — он должен выйти первым (FIFO), но вышел другой тип";
-    delete static_cast<Vector<double>*>(p1);
-    auto [p2, t2] = pool.first();
-    EXPECT_EQ(t2, Types::FLOAT)
-        << "Вторым вставлен FLOAT — он должен выйти вторым (FIFO), но вышел другой тип";
-    delete static_cast<Vector<float>*>(p2);
-    auto [p3, t3] = pool.first();
-    EXPECT_EQ(p3, nullptr)
-        << "После извлечения всех элементов пул должен быть пуст";
-}
-
-TEST(DataPoolTest, MultipleInsertionsAndRetrievals) {
-    DataPool pool;
-    constexpr int N = 5;
-    for (int k = 0; k < N; ++k) {
-        auto* v = new Vector<int>(1, 1, 1, 1);
-        v->arr[0][0][0][0] = k;
-        pool.insert(v, Types::INT_T);
-    }
-    for (int k = 0; k < N; ++k) {
-        auto [ptr, type] = pool.first();
-        ASSERT_NE(ptr, nullptr)
-            << "Элемент #" << k << " должен существовать, но first() вернул nullptr";
-        auto* v = static_cast<Vector<int>*>(ptr);
-        EXPECT_EQ(v->arr[0][0][0][0], k)
-            << "Элемент #" << k << " должен иметь значение " << k
-            << ", но имеет " << v->arr[0][0][0][0];
-        delete v;
-    }
-    auto [ptr, type] = pool.first();
-    EXPECT_EQ(ptr, nullptr)
-        << "После извлечения всех 5 элементов пул должен быть пуст";
-}
-
-TEST(DataPoolTest, InsertMixedTypes) {
-    DataPool pool;
-    auto* vi = new Vector<int64_t>(1, 1, 1, 1);
-    auto* vf = new Vector<float>(1, 1, 1, 1);
-    pool.insert(vi, Types::INT_64_T);
-    pool.insert(vf, Types::FLOAT);
-    auto [p1, t1] = pool.first();
-    EXPECT_EQ(t1, Types::INT_64_T)
-        << "Первый вставленный элемент имел тип INT_64_T, но вышел с другим типом";
-    delete static_cast<Vector<int64_t>*>(p1);
-    auto [p2, t2] = pool.first();
-    EXPECT_EQ(t2, Types::FLOAT)
-        << "Второй вставленный элемент имел тип FLOAT, но вышел с другим типом";
-    delete static_cast<Vector<float>*>(p2);
-}
 
 
 TEST(IpAddressTest, ConstructorStoresBytes) {
@@ -197,28 +108,6 @@ TEST(IpAddressTest, ZeroAddress) {
     EXPECT_EQ(ip.b4, 0) << "b4 нулевого адреса должен быть 0, а равен " << (int)ip.b4;
 }
 
-
-TEST(PoolItemTest, ConstructorSetsFields) {
-    int dummy = 42;
-    PoolItem item(&dummy, Types::INT_T);
-    EXPECT_EQ(item.vector, &dummy)
-        << "PoolItem должен хранить переданный указатель, но хранит другой";
-    EXPECT_EQ(item.type, Types::INT_T)
-        << "PoolItem должен хранить тип INT_T";
-    EXPECT_EQ(item.next, nullptr)
-        << "next нового PoolItem должен быть nullptr";
-}
-
-TEST(PoolItemTest, NextPointerCanBeLinked) {
-    int a = 1, b = 2;
-    PoolItem item1(&a, Types::INT_T);
-    PoolItem item2(&b, Types::DOUBLE);
-    item1.next = &item2;
-    EXPECT_EQ(item1.next, &item2)
-        << "item1.next должен указывать на item2";
-    EXPECT_EQ(item1.next->vector, &b)
-        << "Через item1.next->vector должен быть доступен адрес переменной b";
-}
 
 
 int main(int argc, char** argv) {

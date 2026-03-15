@@ -32,6 +32,7 @@ public:
 
 
 class Menu {
+    static std::mutex cout_mutex;
     std::queue<AnyVector> data;
     std::unique_ptr<NetworkClient> api;
     std::string alias;

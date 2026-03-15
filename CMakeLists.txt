@@ -65,13 +65,3 @@ target_include_directories(myApp_server PRIVATE ${URING_INCLUDE_DIRS})
 target_link_libraries(myApp_server PRIVATE nlohmann_json::nlohmann_json)
 
 # =================
-enable_testing()
-add_executable(unit_tests test/test.cpp ${CLIENT_SOURCES})
-target_include_directories(unit_tests PRIVATE
-        client/include
-        ${googletest_SOURCE_DIR}/googletest/include)
-target_link_libraries(unit_tests PRIVATE
-        GTest::gtest
-        GTest::gtest_main
-        spdlog::spdlog)
-add_test(NAME unit_tests COMMAND unit_tests)

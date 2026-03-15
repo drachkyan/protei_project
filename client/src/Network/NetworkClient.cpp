@@ -1,7 +1,6 @@
 #include "../../include/Network/NetworkClient.h"
 
 void NetworkClient::ping() {
-    spdlog::info("Пинг");
     while (connectionFlag) {
         std::this_thread::sleep_for(std::chrono::seconds(5));
         if (!isConnected()) {

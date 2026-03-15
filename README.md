@@ -1,6 +1,15 @@
 ## Владимир Артикуленко
 
 ## Запуск
+
+Для сборки обязательно нужно установить liburing и pkg-config
+
+``` 
+sudo apt install liburing-dev pkg-config
+cmake .
+cmake --build .
+```
+
 Клиент
 ``` 
 ./myApp_client -a 127.0.0.. -p 8080
@@ -9,6 +18,8 @@
 ```
 ./myApp_server
 ```
+
+
 
 ## Что делает программа?
 

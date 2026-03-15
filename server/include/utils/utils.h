@@ -7,7 +7,7 @@
 #include <optional>
 
 using json = nlohmann::json;
-
+void LoggerConfig();
 void anyVectorToJson(json& j, const AnyVector& v);
 std::optional<AnyVector> vectorFromJson(const json &j);
 

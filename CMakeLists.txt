@@ -34,6 +34,7 @@ set(CLIENT_SOURCES
         client/src/utils/utils.cpp
         client/src/Network/NetworkAddress.cpp
         client/src/Model/VectorFactory.cpp
+        client/src/Network/NetworkClient.cpp
 )
 
 # ================
@@ -43,6 +44,9 @@ set(SERVER_SOURCES
         client/include/Model/vector.hpp
         server/include/utils/utils.h
         server/src/utils/utils.cpp
+        server/src/model/ServerHandlers.cpp
+        server/include/model/ServerHandlers.h
+
 )
 
 # =================
@@ -50,7 +54,8 @@ add_executable(myApp_client client/src/client_main.cpp ${CLIENT_SOURCES})
 target_include_directories(myApp_client PRIVATE client/include)
 target_link_libraries(myApp_client PRIVATE spdlog::spdlog)
 target_link_libraries(myApp_client PRIVATE nlohmann_json::nlohmann_json)
-
+target_compile_options(myApp_client PRIVATE -fsanitize=address -g)
+target_link_options(myApp_client PRIVATE -fsanitize=address)
 
 # =============
 add_executable(myApp_server server/src/server_main.cpp ${SERVER_SOURCES})

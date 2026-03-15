@@ -7,6 +7,7 @@
 #include "Model/VectorFactory.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/bundled/chrono.h"
+
 using json = nlohmann::json;
 
 void test_util(AppSettings& settings);

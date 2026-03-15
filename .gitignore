@@ -3,7 +3,7 @@ myApp
 TODO.md
 .idea
 Testing
-
+server.log
 .cmake
 compile_commands.json
 cmake-build-*/

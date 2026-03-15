@@ -14,6 +14,7 @@ std::unique_ptr<IpAddress> NetworkAddress::parseIpAddress(const char* str) {
         str != end;
         i_ = std::strtol(str, &end, 10)) {
         if (constexpr int64_t MAX_BYTE = 255; i_ < 0 || i_ > MAX_BYTE) {
+
             break;
         }
         bytes[counter] = i_;
@@ -46,6 +47,7 @@ std::unique_ptr<IpAddress> NetworkAddress::parseHexIpAddress(const uint32_t hexA
 
 uint16_t NetworkAddress::parsePort(const char *str) {
     char* end = nullptr;
+
     const int64_t tempPort = strtol(str, &end, 10);
 
     if (*end != '\0') {
@@ -64,6 +66,10 @@ uint16_t NetworkAddress::parsePort(const char *str) {
 NetworkAddress::NetworkAddress(const std::string& port_, const std::string& addr_) {
     this->addr = parseIpAddress(addr_.c_str());
     this->port = parsePort(port_.c_str());
+    if (port == 0 || !addr ) {
+        correctFlag = false;
+    }
+
 }
 
 NetworkAddress::NetworkAddress(uint32_t addr_, uint16_t port_): port(port_) {

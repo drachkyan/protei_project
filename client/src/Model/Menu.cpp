@@ -78,7 +78,6 @@ void Menu::initMenuItems() {
 Menu::Menu(const std::shared_ptr<AppSettings> &app_): app(app_) {
     initMenuItems();
     api = std::make_unique<NetworkClient>(app->getNetworkAddress());
-
 }
 
 void Menu::run() const {
@@ -89,8 +88,17 @@ void Menu::run() const {
     std::cout << *this;
     u_int16_t EXIT_CODE = 0;
     std::string command;
-    while (EXIT_CODE == 0) {
-        std::cin >> command;
+    while (EXIT_CODE == 0 ) {
+
+        if (!(std::cin >> command)) {
+            spdlog::info("Соединение потеряно");
+            break;
+        }
+        if (!api->isConnected()) {
+            spdlog::info("Соединение потеряно");
+
+            break;
+        }
         toLowerCase(command);
         auto it = menuItems.find(command);
         if (it == menuItems.end()) {
@@ -99,4 +107,5 @@ void Menu::run() const {
         }
         EXIT_CODE = it->second.action();
     }
+    fclose(stdin);
 }

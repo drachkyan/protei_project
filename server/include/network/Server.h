@@ -8,9 +8,9 @@
 #include <unordered_map>
 #include <functional>
 #include <nlohmann/json.hpp>
-#include "../include/utils/utils.h"
 #include "../../../client/include/Model/vector.hpp"
 #include "spdlog/spdlog.h"
+#include "../include/model/ServerHandlers.h"
 
 using json = nlohmann::json;
 
@@ -49,14 +49,13 @@ class Server {
     std::unordered_map<OpType, Handler> handlersMap;
     std::unordered_map<int, ClientState> clients;
     std::vector<OpContext*> pendingContexts;
+    ServerHandlers handlers;
     bool running=true;
 
     void initHandlers();
     void addAccept();
     void addRecv(int client_fd);
     void addSend(int client_fd, const char* data, size_t len);
-
-
 
     void packageProcess(json& response, const char* buf);
 

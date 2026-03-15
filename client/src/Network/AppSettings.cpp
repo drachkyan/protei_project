@@ -48,24 +48,10 @@ void AppSettings::initRoleMap() {
 }
 
 bool AppSettings::verifySettings() const {
-    if (role==Role::NONE) {
-        spdlog::info("Не задана роль");
-    }
-    if (username.empty()) {
-        spdlog::info("Не задано имя пользователя");
-    }
-    if (lib.empty()) {
-        spdlog::info("Не задана библиотека");
-    }
-    if (i==-1) {
-        spdlog::info("Не задан флаг -i");
-    }
     if (addr.empty()) {
-        spdlog::info("Не задан ip address");
         return false;
     }
     if (port.empty()) {
-        spdlog::info("Не задан порт");
         return false;
     }
     return true;
@@ -167,6 +153,7 @@ void AppSettings::parseCommandArgs(const int argc, char *argv[]) {
         char* value = argv[j + 1];
         dispatchCommand(flag, value);
     }
+
     if (verifySettings()) {
         this->netAddr = std::make_shared<NetworkAddress>(this->port, this->addr);
         return;

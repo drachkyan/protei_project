@@ -1,6 +1,7 @@
 #include "../../include/network/Server.h"
 
 #include "../../client/include/Model/VectorFactory.h"
+#include "../../include/model/ServerHandlers.h"
 #include "spdlog/spdlog.h"
 
 using json = nlohmann::json;
@@ -48,16 +49,8 @@ void Server::addSend(const int client_fd, const char *data, size_t len) {
 
 
 void Server::packageProcess(json &response, const char *buf) {
-    json j = json::parse(buf);
-    auto res = vectorFromJson(j);
-    if (!res) {
-        spdlog::info("Ошибка парсинга вектора\n");
-        return;
-    }
-    AnyVector& vec = *res;
-    auto sum = vectorSum<double>(vec);
-
-    response["result"] = sum;
+    json req = json::parse(buf);
+    handlers.HandleJSON(req,response);
 }
 
 void Server::handleAccept(OpContext *ctx, const int res) {
@@ -82,6 +75,8 @@ void Server::handleRecv(OpContext *ctx, const int res)  {
         // running = false;  //  для теста на утечки
         return;
     }
+
+
     auto& state = clients[ctx->fd];
 
     state.buffer.insert(state.buffer.end(), ctx->buf.get(), ctx->buf.get() + res); //считал
@@ -121,7 +116,6 @@ void Server::handleSend(const OpContext *ctx, const int res) {
         spdlog::info("ошибка отправки: {}\n", std::strerror(-res));
         return;
     }
-    spdlog::info("отправлено: {} байт fd={}\n", res, ctx->fd);
     addRecv(ctx->fd);
     io_uring_submit(&ring);
 }

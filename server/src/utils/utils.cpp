@@ -3,6 +3,8 @@
 #include <optional>
 #include "../../client/include/Model/VectorFactory.h"
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 void anyVectorToJson(json &j, const AnyVector &v) {
     std::visit([&j](const auto& vec) {
@@ -37,3 +39,15 @@ std::optional<AnyVector> vectorFromJson(const json &j) {
     return std::move(*v);
 }
 
+
+void LoggerConfig() {
+    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto file_sink    = std::make_shared<spdlog::sinks::basic_file_sink_mt>("server.log", true);
+    auto logger = std::make_shared<spdlog::logger>("server",
+        spdlog::sinks_init_list{console_sink, file_sink});
+
+    spdlog::set_default_logger(logger);
+    spdlog::set_level(spdlog::level::info);
+    spdlog::flush_on(spdlog::level::info);
+
+}

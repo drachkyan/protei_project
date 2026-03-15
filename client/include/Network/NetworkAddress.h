@@ -25,11 +25,12 @@ struct IpAddress {
 class NetworkAddress {
     std::unique_ptr<IpAddress> addr;
     uint16_t port;
-
+    bool correctFlag = true;
     static std::unique_ptr<IpAddress> parseIpAddress(const char* str);
     static std::unique_ptr<IpAddress> parseHexIpAddress(uint32_t hexAddr_);
     static uint16_t parsePort(const char* str);
 public:
+    bool isCorrect() const {return correctFlag;}
     friend std::ostream& operator<<(std::ostream& os, const NetworkAddress& na);
 
     NetworkAddress(const uint16_t port_, IpAddress* addr_):
@@ -39,6 +40,7 @@ public:
     uint16_t getPort() const {return port;} ;
     std::string getIpAddress() const {return addr->toString();}
     NetworkAddress(uint32_t hexAddr_, uint16_t port_);
+
 };
 
 

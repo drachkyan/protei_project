@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/Model/vector.hpp"
+#include "../myvector/include/MyVector.hpp"
 #include "../include/Network/NetworkAddress.h"
 #include "../include/Network/AppSettings.h"
 #include <spdlog/spdlog.h>

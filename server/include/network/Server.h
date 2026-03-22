@@ -8,8 +8,8 @@
 #include <unordered_map>
 #include <functional>
 #include <nlohmann/json.hpp>
-#include "../../../client/include/Model/vector.hpp"
-#include "spdlog/spdlog.h"
+#include "../../../myvector/include/MyVector.hpp"
+#include <spdlog/spdlog.h>
 #include "../include/model/ServerHandlers.h"
 
 using json = nlohmann::json;
@@ -50,7 +50,7 @@ class Server {
     std::unordered_map<int, ClientState> clients;
     std::vector<OpContext*> pendingContexts;
     ServerHandlers handlers;
-    bool running=true;
+    std::atomic<bool> correct = false;
 
     void initHandlers();
     void addAccept();
@@ -65,7 +65,7 @@ class Server {
 public:
     Server(int PORT_);
     ~Server();
-
+    bool isCorrect(){return correct;};
     void run();
 
 };

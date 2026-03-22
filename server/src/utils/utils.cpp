@@ -1,43 +1,9 @@
-#include "../../client/include/Model/vector.hpp"
-#include "../../include/utils/utils.h"
-#include <optional>
-#include "../../client/include/Model/VectorFactory.h"
+#include "../../../myvector/include/MyVector.hpp"
+
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
-
-void anyVectorToJson(json &j, const AnyVector &v) {
-    std::visit([&j](const auto& vec) {
-        vectorToJson(j, *vec);
-        j["type"] = vec->type_name;
-    }, v);
-}
-
-std::optional<AnyVector> vectorFromJson(const json &j) {
-    size_t m = j["m"];
-    size_t n = j["n"];
-    size_t i = j["i"];
-    size_t jj = j["j"];
-
-    auto v = VectorFactory::create(j["type"], m, n, i, jj);
-    if (!v) {
-        spdlog::info("Ошибка создания");
-        return std::nullopt;
-    }
-    const auto& arr = j["data"];
-    size_t idx = 0;
-
-    std::visit([&](auto& vec) {
-        using T = typename std::decay_t<decltype(*vec)>::value_type;
-        for (size_t a = 0; a < vec->m; a++)
-            for (size_t b = 0; b < vec->n; b++)
-                for (size_t c = 0; c < vec->i; c++)
-                    for (size_t d = 0; d < vec->j; d++)
-                        vec->arr[a][b][c][d] = arr[idx++].get<T>();
-    }, *v);
-
-    return std::move(*v);
-}
+#include <iostream>
 
 
 void LoggerConfig() {
@@ -49,5 +15,57 @@ void LoggerConfig() {
     spdlog::set_default_logger(logger);
     spdlog::set_level(spdlog::level::info);
     spdlog::flush_on(spdlog::level::info);
+
+}
+
+uint16_t parsePort(const char *str) {
+    char* end = nullptr;
+
+    const int64_t tempPort = strtol(str, &end, 10);
+
+    if (*end != '\0') {
+        spdlog::info("Ошибка при парсинге порта");
+        return 0;
+    }
+    if (constexpr int64_t MAX_PORT = 65535;
+        tempPort > MAX_PORT || tempPort <= 0) {
+        spdlog::info("Порт должен быть в диапазоне 1 - 65535");
+        return 0;
+        }
+    return tempPort;
+}
+
+size_t hash(const char* str) {
+    size_t hash = 0;
+    while (*str) {
+        hash = hash * 31 + *str;
+        ++str;
+    }
+    return hash;
+}
+
+int32_t parseCommandArgs(int argc, char* argv[]) {
+    if (argc > 3 || argc < 1) {
+        spdlog::info("Неверное количество аргументов при запуске");
+        return -1;
+    }
+    if (argc == 1) {
+        return 8080;
+    }
+    if (hash(argv[1]) == hash("--help") && argc == 2) {
+        std::cout << "Сервер, принимает жсон с массивом и возводит каждый элемент в квадрат\n"
+        << "-p : Ввод порта (дефолтный 8080)\n"
+        << "--help : Вывод справки\n";
+        return 0;
+    }
+    int32_t port = -1;
+    if (argc == 3 && hash(argv[1]) == hash("-p")) {
+        port = parsePort(argv[2]);
+        if (port == 0) {
+            spdlog::info("Введен порт 0 или нечитаемый порт - применяется порт по умолчанию (8080)");
+            return 8080;
+        }
+    }
+    return port;
 
 }

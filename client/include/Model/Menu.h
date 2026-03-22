@@ -6,11 +6,9 @@
 #include <string>
 #include <utility>
 #include <queue>
-#include <variant>
-#include "vector.hpp"
+#include "../../../myvector/include/MyVector.hpp"
 #include "../../include/Network/AppSettings.h"
 #include "../../include/Network/NetworkClient.h"
-
 
 using menu_func_type = std::function<u_int16_t()>;
 using creator_func_type = std::function<void*()>;
@@ -32,15 +30,14 @@ public:
 
 
 class Menu {
-    static std::mutex cout_mutex;
-    std::queue<AnyVector> data;
+    std::queue<MyVector> data;
     std::unique_ptr<NetworkClient> api;
     std::string alias;
     std::unordered_map<std::string, MenuItem> menuItems;
     std::shared_ptr<AppSettings> app{};
     void initMenuItems();
 
-    static void inputVector(AnyVector &vector);
+    bool inputVector(MyVector& vector, size_t size_);
     void sendVector();
     void printVector();
     void addVector();

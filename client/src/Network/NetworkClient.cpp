@@ -8,7 +8,7 @@ void NetworkClient::ping() {
             break;
         }
         sendJSON({{"type", "ping"}});
-        json j = recvJson();
+        json j = recvJSON();
         if (j.empty()) {
             connectionFlag = false;
             spdlog::info("Сервер разорвал соединение");
@@ -40,7 +40,7 @@ int NetworkClient::createConnection() {
     return 0;
 }
 
-void NetworkClient::sendJSON(const json &j) {
+void NetworkClient::sendJSON(const json &j) const {
     if (fd == -1) {
         spdlog::info("Нет соединения");
         return;
@@ -51,7 +51,7 @@ void NetworkClient::sendJSON(const json &j) {
     send(fd, data.c_str(), data.size(), 0);
 }
 
-json NetworkClient::recvJson() {
+json NetworkClient::recvJSON() {
     if (fd == -1) {
         spdlog::info("Нет соединения");
         return json{};
@@ -85,17 +85,6 @@ json NetworkClient::recvJson() {
     return json::parse(buf);
 }
 
-void NetworkClient::sendVector(AnyVector &vector) {
-    json j{};
-    anyVectorToJson(j, vector);
-    if (j.empty()) {
-        spdlog::info("Ошибка конвертации вектора в json\n");
-        return;
-    }
-    spdlog::info("Вектор сконвертирован\n");
-    sendJSON(j);
-    std::cout << recvJson();
-}
 
 NetworkClient::NetworkClient(std::shared_ptr<NetworkAddress> address_)
                                 : address(std::move(address_))
@@ -118,6 +107,5 @@ NetworkClient::~NetworkClient() {
     }
     if (fd != -1) {
         close(fd);
-        fd = -1;
     }
 }

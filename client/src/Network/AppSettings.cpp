@@ -4,6 +4,7 @@
 #include <spdlog/spdlog.h>
 #include "../../include/Network/AppSettings.h"
 #include "../../include/Network/NetworkAddress.h"
+#include "../../client/include/utils/utils.h"
 
 std::ostream& operator<<(std::ostream& stream, const IpAddress& addr) {
     stream
@@ -35,9 +36,8 @@ AppSettings::AppSettings() {
 
 void AppSettings::initFuncMap() {
     funcMap["-p"] = [this](const char* arg) { this->parsePort(arg); };
-    funcMap["-a"] = [this](const char* arg) { this->parseIpAddress(arg); };
+    funcMap["-i"] = [this](const char* arg) { this->parseIpAddress(arg); };
     funcMap["-u"] = [this](const char* arg) { this->parseUsername(arg); };
-    funcMap["-i"] = [this](const char* arg) { this->parseI(arg); };
     funcMap["-L"] = [this](const char* arg) { this->parseLib(arg); };
     funcMap["-r"] = [this](const char* arg) { this->parseRole(arg); };
 }
@@ -144,6 +144,16 @@ void AppSettings::setUsername(std::string username_) {
 }
 
 void AppSettings::parseCommandArgs(const int argc, char *argv[]) {
+    if (argc == 2 && hash(argv[1]) == hash("--help")) {
+        std::cout << "Справка по работе клиентского приложения\n"
+        << "-i : указание ip адреса\n"
+        << "-p : указание порта\n"
+        << "--help : справка\n\n"
+        << "Работа в меню: \nadd_vector int 3 1 2 3\n"
+        << "Создает вектор длинной 3 состоящий из чисел 1 2 3\n"
+        << "send_vector : отпправляет вектор на сервер\n";
+        return;
+    }
     if (argc % 2 == 0 || argc < 2) {
         spdlog::info("Неверное число аргументов командной строки");
         return;

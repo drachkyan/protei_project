@@ -1,6 +1,6 @@
 #include "../../include/model/ServerHandlers.h"
 #include <nlohmann/json.hpp>
-#include "../../client/include/Model/vector.hpp"
+#include "../../../myvector/include/MyVector.hpp"
 #include <spdlog/spdlog.h>
 #include "../include/utils/utils.h"
 
@@ -11,19 +11,19 @@ void ServerHandlers::initServerHandlersMap() {
 
 void ServerHandlers::handlePing(json &req, json &res) {
     res["type"] = "pong";
-    spdlog::info("Понг");
 }
 
 void ServerHandlers::handleVector(json &req, json &res) {
-    auto reqVector = vectorFromJson(req);
-    if (!reqVector) {
+    spdlog::info(req.dump());
+    auto reqVector = MyVector(req);
+    if (!reqVector.getData()) {
         spdlog::info("Ошибка парсинга вектора");
         return;
     }
-    AnyVector& vec = *reqVector;
-    auto sum = vectorSum<double>(vec);
 
-    res["result"] = sum;
+    auto resVector = reqVector * reqVector;
+
+    resVector.toJson(res);
 }
 
 void ServerHandlers::HandleJSON(json &req, json &res) {

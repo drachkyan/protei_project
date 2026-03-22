@@ -1,7 +1,3 @@
-//
-// Created by vova on 01.03.2026.
-//
-
 #ifndef INCLUDE_APPSETTINGS_H
 #define INCLUDE_APPSETTINGS_H
 

@@ -1,6 +1,6 @@
 #include "../../include/network/Server.h"
 
-#include "../../client/include/Model/VectorFactory.h"
+#include "../../../myvector/include/VectorFactory.h"
 #include "../../include/model/ServerHandlers.h"
 #include "spdlog/spdlog.h"
 
@@ -69,6 +69,9 @@ void Server::handleAccept(OpContext *ctx, const int res) {
 
 void Server::handleRecv(OpContext *ctx, const int res)  {
     if (res <= 0) {
+        if (clients.find(ctx->fd) == clients.end()) {
+            return;
+        }
         spdlog::info( "клиент fd={} отключился\n", ctx->fd);
         clients.erase(ctx->fd);
         close(ctx->fd);
@@ -151,7 +154,7 @@ Server::Server(int PORT_)  :
         spdlog::info("ошибка создания io_uring");
         return;
     }
-
+    correct = true;
     spdlog::info("[сервер]: запущен на порту {}\n", PORT);
 }
 
@@ -159,7 +162,7 @@ void Server::run() {
     addAccept();
     io_uring_submit(&ring);
 
-    while (running) {
+    while (true) {
         io_uring_cqe* cqe = nullptr;
 
         if (io_uring_wait_cqe(&ring, &cqe) < 0) {

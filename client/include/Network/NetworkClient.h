@@ -10,7 +10,7 @@
 #include <nlohmann/json.hpp>
 #include "spdlog/spdlog.h"
 #include "../../include/utils/utils.h"
-#include "../../include/Model/VectorFactory.h"
+#include "../../../myvector/include/VectorFactory.h"
 
 using json = nlohmann::json;
 
@@ -21,17 +21,17 @@ class NetworkClient {
     static constexpr size_t BUF_SIZE = 1024;
     std::shared_ptr<NetworkAddress> address;
 
+
     void ping();
 
     int createConnection();
 
-    void sendJSON(const json& j);
-
-    json recvJson();
 
 
 public:
-    void sendVector(AnyVector &vector);
+    void sendJSON(const json& j) const;
+    json recvJSON();
+
     bool isConnected() const {return connectionFlag;}
     explicit NetworkClient(std::shared_ptr<NetworkAddress> address_);
     ~NetworkClient();

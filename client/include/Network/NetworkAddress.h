@@ -5,10 +5,10 @@
 #include <string>
 
 struct IpAddress {
-    const uint8_t b1;
-    const uint8_t b2;
-    const uint8_t b3;
-    const uint8_t b4;
+    uint8_t b1;
+    uint8_t b2;
+    uint8_t b3;
+    uint8_t b4;
 
     IpAddress(const uint8_t b1, const uint8_t b2,
         const uint8_t b3, const uint8_t b4):
@@ -20,27 +20,41 @@ struct IpAddress {
                std::to_string(b3) + "." +
                std::to_string(b4);
     }
+
+    IpAddress& operator=(const IpAddress& other) {
+        if (this != &other) {
+            b1 = other.b1;
+            b2 = other.b2;
+            b3 = other.b3;
+            b4 = other.b4;
+        }
+        return *this;
+    }
 };
 
 class NetworkAddress {
-    std::unique_ptr<IpAddress> addr;
-    uint16_t port;
+    IpAddress addr{0,0,0,0};
+    uint16_t port{};
     bool correctFlag = true;
-    static std::unique_ptr<IpAddress> parseIpAddress(const char* str);
-    static std::unique_ptr<IpAddress> parseHexIpAddress(uint32_t hexAddr_);
-    static uint16_t parsePort(const char* str);
+
+    bool parseIpAddress(const char* str);
+    uint16_t parsePort(const char* str);
 public:
-    bool isCorrect() const {return correctFlag;}
+    [[nodiscard]] bool isCorrect() const { return correctFlag; }
     friend std::ostream& operator<<(std::ostream& os, const NetworkAddress& na);
-
-    NetworkAddress(const uint16_t port_, IpAddress* addr_):
-        addr(addr_), port(port_) {}
-
     NetworkAddress(const std::string& port_, const std::string& addr_);
-    uint16_t getPort() const {return port;} ;
-    std::string getIpAddress() const {return addr->toString();}
-    NetworkAddress(uint32_t hexAddr_, uint16_t port_);
 
+    [[nodiscard]] uint16_t getPort() const { return port; }
+    [[nodiscard]] std::string getIpAddress() const { return addr.toString(); }
+
+    NetworkAddress& operator=(const NetworkAddress& other) {
+        if (this != &other) {
+            addr = other.addr;
+            port = other.port;
+            correctFlag = other.correctFlag;
+        }
+        return *this;
+    }
 };
 
 

@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <functional>
-
+#include <optional>
 #include "NetworkAddress.h"
 
 using func_type = std::function<void(char*)>;
@@ -19,7 +19,7 @@ enum class Role{
 class AppSettings {
     std::string port;
     std::string addr;
-    std::shared_ptr<NetworkAddress> netAddr;
+    std::optional<NetworkAddress> netAddr = std::nullopt;
     std::string lib;
     Role role;
     int64_t i;
@@ -55,7 +55,7 @@ public:
     void printSettings() const;
     void setUsername(std::string username_);
     void parseCommandArgs(int argc, char*argv[]);
-    std::shared_ptr<NetworkAddress> getNetworkAddress(){return netAddr;};
+    std::optional<NetworkAddress>& getNetworkAddress(){return netAddr;};
 };
 
 

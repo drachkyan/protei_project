@@ -75,7 +75,6 @@ void Server::handleRecv(OpContext *ctx, const int res)  {
         spdlog::info( "клиент fd={} отключился\n", ctx->fd);
         clients.erase(ctx->fd);
         close(ctx->fd);
-        // running = false;  //  для теста на утечки
         return;
     }
 

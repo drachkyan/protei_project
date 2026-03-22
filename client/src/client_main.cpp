@@ -4,9 +4,9 @@
 
 int main(const int argc, char* argv[]) {
     // test_out_of_bounds();
-    auto app = std::make_shared<AppSettings>();
-    app->parseCommandArgs(argc, argv);
-    if (!app->verifySettings()) {
+    auto app = AppSettings();
+    app.parseCommandArgs(argc, argv);
+    if (!app.verifySettings()) {
         return 0;
     }
 

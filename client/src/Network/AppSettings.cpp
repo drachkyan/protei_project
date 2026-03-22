@@ -18,9 +18,11 @@ std::ostream& operator<<(std::ostream& stream, const IpAddress& addr) {
 
 
 AppSettings::AppSettings(std::string port_, std::string addr_, std::string lib_, Role role_, int64_t i_,std::string username_):
-port(std::move(port_)), addr(std::move(addr_)), lib(std::move(lib_)), role(role_), i(i_), username(std::move(username_)){
+    port(std::move(port_)), addr(std::move(addr_)), lib(std::move(lib_)), role(role_), i(i_), username(std::move(username_))
+{
     initFuncMap();
     initRoleMap();
+    netAddr = NetworkAddress(port, addr);
 }
 
 AppSettings::AppSettings() {
@@ -135,7 +137,7 @@ void AppSettings::printSettings() const {
     }
     std::cout << "Библиотека "<< this->lib << std::endl;
     std::cout << "Имя " << this->username << std::endl;
-    std::cout << "Сетевой адрес " << *(this->netAddr) << std::endl;
+    std::cout << "Сетевой адрес " << this->netAddr.value() << std::endl;
     std::cout << "I " << this->i << std::endl;
 }
 
@@ -165,7 +167,7 @@ void AppSettings::parseCommandArgs(const int argc, char *argv[]) {
     }
 
     if (verifySettings()) {
-        this->netAddr = std::make_shared<NetworkAddress>(this->port, this->addr);
+        this->netAddr = NetworkAddress(this->port, this->addr);
         return;
     }
     spdlog::info("Соединение не может быть установлено - не задан айпи адрес или порт");

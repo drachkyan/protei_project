@@ -10,18 +10,6 @@
 
 using json = nlohmann::json;
 
-void test_util(AppSettings& settings) {
-    std::vector<std::unique_ptr<Test>> tests{};
-    tests.push_back(std::make_unique<ConnectionTest>(settings));
-
-    tests.push_back(std::make_unique<ResourceTest>(std::vector<std::string>{
-            "/mnt/c/Users/vova/Desktop/protei_hw/test.sh",
-            "/mnt/c/Users/vova/Desktop/protei_hw/test123.sh"}));
-
-    for (const auto& test : tests) {
-        test->test();
-    }
-}
 
 void toLowerCase(std::string &c) {
     size_t i = 0;

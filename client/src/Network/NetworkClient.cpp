@@ -1,20 +1,30 @@
 #include "../../include/Network/NetworkClient.h"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <iostream>
+#include <memory>
+#include <unistd.h>
+#include <nlohmann/json.hpp>
+#include "spdlog/spdlog.h"
+#include "../../include/utils/utils.h"
 
 void NetworkClient::ping() {
     while (connectionFlag) {
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::this_thread::sleep_for(std::chrono::seconds(10));
         if (!isConnected()) {
             spdlog::info("Сервер разорвал соединение");
             break;
         }
-        sendJSON({{"type", "ping"}});
-        json j = recvJSON();
-        if (j.empty()) {
+        json res {};
+        json req = {{"type", "ping"}};
+        sendRecv(req, res);
+        if (res.empty()) {
             connectionFlag = false;
             spdlog::info("Сервер разорвал соединение");
             return;
         }
-        if (j["type"] != "pong") {
+        if (res["type"] != "pong") {
             connectionFlag = false;
             spdlog::info("Сервер работает некорректно или сервел завершил свою работу");
             return;
@@ -28,9 +38,9 @@ int NetworkClient::createConnection() {
 
     sockaddr_in addr{
         .sin_family = AF_INET,
-        .sin_port   = htons(address->getPort()),
+        .sin_port   = htons(address.getPort()),
     };
-    inet_pton(AF_INET, address->getIpAddress().c_str(), &addr.sin_addr);
+    inet_pton(AF_INET, address.getIpAddress().c_str(), &addr.sin_addr);
 
     if (connect(fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
         return 1;
@@ -85,11 +95,18 @@ json NetworkClient::recvJSON() {
     return json::parse(buf);
 }
 
+void NetworkClient::sendRecv(json& req, json& res) {
+    lock.lock();
+    sendJSON(req);
+    res = recvJSON();
+    lock.unlock();
+}
 
-NetworkClient::NetworkClient(std::shared_ptr<NetworkAddress> address_)
-                                : address(std::move(address_))
+
+NetworkClient::NetworkClient(NetworkAddress& address_)
+                                : address(address_)
 {
-    if (!address->isCorrect()) {
+    if (!address.isCorrect()) {
         spdlog::info("Айпи адрес или порт введены неверно");
         return;
     }

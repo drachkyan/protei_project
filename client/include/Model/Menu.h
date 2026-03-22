@@ -31,10 +31,10 @@ public:
 
 class Menu {
     std::queue<MyVector> data;
-    std::unique_ptr<NetworkClient> api;
+    AppSettings& app;
+    NetworkClient api;
     std::string alias;
     std::unordered_map<std::string, MenuItem> menuItems;
-    std::shared_ptr<AppSettings> app{};
     void initMenuItems();
 
     bool inputVector(MyVector& vector, size_t size_);
@@ -44,7 +44,7 @@ class Menu {
     static void quit();
 public:
 
-    Menu(const std::shared_ptr<AppSettings> &app_);
+    Menu(AppSettings& app_);
 
     friend std::ostream& operator<<(std::ostream& os, const Menu& menu) {
         os << "======== МЕНЮ =========" << std::endl;

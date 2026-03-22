@@ -52,8 +52,8 @@ void Menu::sendVector() {
         spdlog::info("Ошибка конвертации вектора в json\n");
         return;
     }
-    api->sendJSON(j);
-    auto res = api->recvJSON();
+    json res{};
+    api.sendRecv(j, res);
     std::cout << "Результат: ";
     MyVector(res).print();
     data.pop();
@@ -119,13 +119,13 @@ void Menu::initMenuItems() {
         MenuItem([this](){this->printVector();return 0;}, "print_vector","Вывод первого записанного вектора")});
 }
 
-Menu::Menu(const std::shared_ptr<AppSettings> &app_): app(app_) {
+Menu::Menu(AppSettings &app_): app(app_), api(app.getNetworkAddress().value()) {
     initMenuItems();
-    api = std::make_unique<NetworkClient>(app->getNetworkAddress());
+
 }
 
 void Menu::run() const {
-    if (!api->isConnected()) {
+    if (!api.isConnected()) {
         spdlog::info("Соединение не установлено\n");
         return;
     }
@@ -138,7 +138,7 @@ void Menu::run() const {
             spdlog::info("Соединение потеряно");
             break;
         }
-        if (!api->isConnected()) {
+        if (!api.isConnected()) {
             spdlog::info("Соединение потеряно");
 
             break;

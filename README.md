@@ -10,15 +10,6 @@ cmake .
 cmake --build .
 ```
 
-Клиент
-``` 
-./myApp_client -a 127.0.0.. -p 8080
-```
-Сервер
-```
-./myApp_server
-```
-
 Запуск
 ``` 
 ./myApp_server -p 8080

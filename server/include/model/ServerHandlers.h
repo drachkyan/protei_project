@@ -1,6 +1,4 @@
-
-#ifndef INCLUDE_SERVER_HANDLERS_H
-#define INCLUDE_SERVER_HANDLERS_H
+#pragma once
 
 #include <nlohmann/json.hpp>
 #include "../../../myvector/include/MyVector.hpp"
@@ -24,6 +22,3 @@ public:
         initServerHandlersMap();
     }
 };
-
-
-#endif  // INCLUDE_SERVER_HANDLERS_H

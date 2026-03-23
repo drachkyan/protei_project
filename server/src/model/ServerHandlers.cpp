@@ -2,7 +2,6 @@
 #include <nlohmann/json.hpp>
 #include "../../../myvector/include/MyVector.hpp"
 #include <spdlog/spdlog.h>
-#include "../include/utils/utils.h"
 
 void ServerHandlers::initServerHandlersMap() {
     handlersMap["ping"] = &ServerHandlers::handlePing;

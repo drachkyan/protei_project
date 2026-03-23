@@ -1,5 +1,4 @@
 #include "../../include/Test/ConnectionTest.h"
-
 #include "spdlog/spdlog.h"
 
 ConnectionTest::ConnectionTest(AppSettings& settings_): settings(settings_) {

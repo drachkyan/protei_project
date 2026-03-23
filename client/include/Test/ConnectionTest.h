@@ -1,5 +1,4 @@
-#ifndef INCLUDE_CONNECTION_TEST_H
-#define INCLUDE_CONNECTION_TEST_H
+#pragma once
 
 #include "../Network/AppSettings.h"
 #include "Test.h"
@@ -11,5 +10,3 @@ public:
     ConnectionTest(AppSettings& settings);
     int test() override;
 };
-
-#endif  // INCLUDE_CONNECTION_TEST_H

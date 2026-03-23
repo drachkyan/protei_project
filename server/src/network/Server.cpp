@@ -1,6 +1,4 @@
 #include "../../include/network/Server.h"
-
-#include "../../../myvector/include/VectorFactory.h"
 #include "../../include/model/ServerHandlers.h"
 #include "spdlog/spdlog.h"
 
@@ -8,8 +6,17 @@ using json = nlohmann::json;
 
 
 Server::~Server() {
-    for (auto* ctx : pendingContexts) {
-        delete ctx;
+    for (auto& ctx : pendingContexts) {
+        auto* sqe = io_uring_get_sqe(&ring);
+        if (sqe) {
+            io_uring_prep_cancel(sqe, ctx.get(), 0);
+        }
+    }
+    io_uring_submit(&ring);
+
+    io_uring_submit(&ring);
+    for (auto& [fd, state]:clients) {
+        close(fd);
     }
     io_uring_queue_exit(&ring);
     close(server_fd);
@@ -22,29 +29,29 @@ void Server::initHandlers() {
 }
 
 void Server::addAccept() {
-    auto* ctx = new OpContext{OpType::ACCEPT, server_fd, BUF_SIZE};  // освобождается потом в деструкторе
-    pendingContexts.push_back(ctx);
+    auto ctx = std::make_unique<OpContext>(OpType::ACCEPT, server_fd, BUF_SIZE);
     auto* sqe = io_uring_get_sqe(&ring);
     io_uring_prep_accept(sqe, server_fd,
         reinterpret_cast<sockaddr*>(&client_addr), &addrlen, 0);
-    io_uring_sqe_set_data(sqe, ctx);
+    io_uring_sqe_set_data(sqe, ctx.get());
+    pendingContexts.push_back(std::move(ctx));
 }
 
 void Server::addRecv(const int client_fd) {
-    auto* ctx = new OpContext{OpType::RECV, client_fd, BUF_SIZE};  // освобождается потом в деструкторе
-    pendingContexts.push_back(ctx);
+    auto ctx = std::make_unique<OpContext>(OpType::RECV, client_fd, BUF_SIZE);
     auto* sqe = io_uring_get_sqe(&ring);
     io_uring_prep_recv(sqe, client_fd, ctx->buf.get(), ctx->buf_size, 0);
-    io_uring_sqe_set_data(sqe, ctx);
+    io_uring_sqe_set_data(sqe, ctx.get());
+    pendingContexts.push_back(std::move(ctx));
 }
 
-void Server::addSend(const int client_fd, const char *data, size_t len) {
-    auto* ctx = new OpContext{OpType::SEND, client_fd, len};  // освобождается потом в деструкторе
-    pendingContexts.push_back(ctx);
+void Server::addSend(const int client_fd, const char *data, size_t len, bool isLast = false) {
+    auto ctx = std::make_unique<OpContext>(OpType::SEND, client_fd, len, isLast);
     std::copy_n(data, len, ctx->buf.get());
     auto* sqe = io_uring_get_sqe(&ring);
     io_uring_prep_send(sqe, client_fd, ctx->buf.get(), len, 0);
-    io_uring_sqe_set_data(sqe, ctx);
+    io_uring_sqe_set_data(sqe, ctx.get());
+    pendingContexts.push_back(std::move(ctx));
 }
 
 
@@ -104,7 +111,7 @@ void Server::handleRecv(OpContext *ctx, const int res)  {
         uint32_t len = htonl(data.size());
 
         addSend(ctx->fd, reinterpret_cast<const char*>(&len), sizeof(len));
-        addSend(ctx->fd, data.c_str(), data.size());
+        addSend(ctx->fd, data.c_str(), data.size(), true);
         io_uring_submit(&ring);
         return;
     }
@@ -118,8 +125,11 @@ void Server::handleSend(const OpContext *ctx, const int res) {
         spdlog::info("ошибка отправки: {}\n", std::strerror(-res));
         return;
     }
-    addRecv(ctx->fd);
-    io_uring_submit(&ring);
+    if (ctx->isLastMessage) {
+        addRecv(ctx->fd);
+        io_uring_submit(&ring);
+    }
+
 }
 
 Server::Server(int PORT_)  :
@@ -170,15 +180,19 @@ void Server::run() {
         }
 
         auto* ctx = static_cast<OpContext*>(io_uring_cqe_get_data(cqe));
-        pendingContexts.erase(
-        std::remove(pendingContexts.begin(), pendingContexts.end(), ctx),
-        pendingContexts.end()
-        );
+
+        auto ctx_ptr = std::find_if(pendingContexts.begin(), pendingContexts.end(),
+            [ctx](const auto& p) { return p.get() == ctx; });
+
         int res = cqe->res;
         io_uring_cqe_seen(&ring, cqe);
 
-        handlersMap[ctx->type](ctx, res);
+        try {
+            handlersMap[ctx->type](ctx, res);
+        }catch (std::exception& e) {
+            spdlog::error(e.what());
+        }
+        pendingContexts.erase(ctx_ptr);
 
-        delete ctx;
     }
 }

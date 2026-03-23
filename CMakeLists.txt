@@ -56,6 +56,8 @@ target_link_libraries(myApp_client PRIVATE nlohmann_json::nlohmann_json)
 
 # =============
 add_executable(myApp_server server/src/server_main.cpp ${SERVER_SOURCES} ${MY_VECTOR})
+#target_compile_options(myApp_server PRIVATE -fsanitize=address -g)
+#target_link_options(myApp_server PRIVATE -fsanitize=address)
 target_include_directories(myApp_server PRIVATE server/include myvector/include)
 target_link_libraries(myApp_server PRIVATE spdlog::spdlog ${URING_LIBRARIES})
 target_include_directories(myApp_server PRIVATE ${URING_INCLUDE_DIRS})

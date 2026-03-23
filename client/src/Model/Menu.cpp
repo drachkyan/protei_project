@@ -34,6 +34,7 @@ bool Menu::inputVector(MyVector& vector, size_t size_) {
             return false;
         }
     }
+    spdlog::info("Вектор введен успешно");
     std::cin.ignore(10000, '\n');
     return true;
 }

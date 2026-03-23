@@ -1,5 +1,4 @@
 #include "../include/VectorFactory.h"
-
 #include <unordered_map>
 
 

@@ -1,5 +1,4 @@
-#ifndef INCLUDE_MENU_H
-#define INCLUDE_MENU_H
+#pragma once
 
 #include <functional>
 #include <unordered_map>
@@ -56,6 +55,3 @@ public:
     void run() const;
 };
 
-
-
-#endif  // INCLUDE_MENU_H

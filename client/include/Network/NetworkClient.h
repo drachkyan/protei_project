@@ -1,7 +1,5 @@
-#ifndef INCLUDE_NETWORK_CLIENT_H
-#define INCLUDE_NETWORK_CLIENT_H
+#pragma once
 
-#include <memory>
 #include <nlohmann/json.hpp>
 #include "spdlog/spdlog.h"
 #include "../../include/utils/utils.h"
@@ -31,6 +29,3 @@ public:
     explicit NetworkClient(NetworkAddress& address_);
     ~NetworkClient();
 };
-
-
-#endif  // INCLUDE_NETWORK_CLIENT_H

@@ -1,5 +1,4 @@
-#ifndef INCLUDE_RESOURCE_TEST_H
-#define INCLUDE_RESOURCE_TEST_H
+#pragma once
 
 #include "Test.h"
 #include <string>
@@ -14,6 +13,3 @@ public:
 
     explicit ResourceTest(const std::vector<std::string>& files_);
 };
-
-
-#endif  // INCLUDE_RESOURCE_TEST_H

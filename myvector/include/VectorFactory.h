@@ -1,5 +1,5 @@
-#ifndef INCLUDE_VECTOR_FACTORY_H
-#define INCLUDE_VECTOR_FACTORY_H
+#pragma once
+
 
 #include <unordered_map>
 #include <vector>
@@ -40,6 +40,3 @@ static const std::unordered_map<std::string, factory_func>& getFactoryMap() {
 
 
 std::optional<AnyVector> VectorFactory(size_t size_, const std::string& type_name);
-
-
-#endif  // INCLUDE_VECTOR_FACTORY_H

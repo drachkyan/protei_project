@@ -1,5 +1,4 @@
-#ifndef INCLUDE_VECTOR_HPP_
-#define INCLUDE_VECTOR_HPP_
+#pragma once
 
 #include <variant>
 #include <memory>
@@ -44,5 +43,3 @@ public:
 
 };
 
-
-#endif  // INCLUDE_VECTOR_HPP_

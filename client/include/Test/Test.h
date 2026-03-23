@@ -1,6 +1,4 @@
-#ifndef INCLUDE_TEST_H
-#define INCLUDE_TEST_H
-
+#pragma once
 
 class Test {
 public:
@@ -8,5 +6,3 @@ public:
     virtual int test() = 0;
 };
 
-
-#endif  // INCLUDE_TEST_H

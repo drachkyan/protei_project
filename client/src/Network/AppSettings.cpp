@@ -17,8 +17,8 @@ std::ostream& operator<<(std::ostream& stream, const IpAddress& addr) {
 }
 
 
-AppSettings::AppSettings(std::string port_, std::string addr_, std::string lib_, Role role_, int64_t i_,std::string username_):
-    port(std::move(port_)), addr(std::move(addr_)), lib(std::move(lib_)), role(role_), i(i_), username(std::move(username_))
+AppSettings::AppSettings(std::string port_, std::string addr_, std::string lib_, Role role_, std::string username_):
+    port(std::move(port_)), addr(std::move(addr_)), lib(std::move(lib_)), role(role_), username(std::move(username_))
 {
     initFuncMap();
     initRoleMap();
@@ -32,7 +32,6 @@ AppSettings::AppSettings() {
     addr="";
     lib="";
     role=Role::CLIENT;
-    i=0;
     username="";
 }
 
@@ -72,9 +71,6 @@ void AppSettings::setPort(std::string port_) {
     this->port = std::move(port_);
 }
 
-void AppSettings::setI(int64_t i_) {
-    this->i = i_;
-}
 
 void AppSettings::setLib(std::string lib_) {
     this->lib = std::move(lib_);
@@ -98,11 +94,6 @@ void AppSettings::dispatchCommand(const char *command, char *arg) {
 }
 
 
-
-void AppSettings::parseI(const char *str) {
-    char* end = nullptr;
-    this->setI(strtol(str, &end, 10));
-}
 
 void AppSettings::parseUsername(const char *str) {
     const std::string username_(str);
@@ -138,7 +129,6 @@ void AppSettings::printSettings() const {
     std::cout << "Библиотека "<< this->lib << std::endl;
     std::cout << "Имя " << this->username << std::endl;
     std::cout << "Сетевой адрес " << this->netAddr.value() << std::endl;
-    std::cout << "I " << this->i << std::endl;
 }
 
 void AppSettings::setUsername(std::string username_) {

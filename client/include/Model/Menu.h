@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 #include <queue>
+#include "MenuItem.h"
 #include "../../../myvector/include/MyVector.hpp"
 #include "../../include/Network/AppSettings.h"
 #include "../../include/Network/NetworkClient.h"
@@ -33,14 +34,8 @@ class Menu {
     AppSettings& app;
     NetworkClient api;
     std::string alias;
-    std::unordered_map<std::string, MenuItem> menuItems;
+    std::unordered_map<std::string, std::unique_ptr<AbstractMenuItem>> menuItems;
     void initMenuItems();
-
-    bool inputVector(MyVector& vector, size_t size_);
-    void sendVector();
-    void printVector();
-    void addVector();
-    static void quit();
 public:
 
     Menu(AppSettings& app_);
@@ -48,7 +43,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Menu& menu) {
         os << "======== МЕНЮ =========" << std::endl;
         for (const auto& item: menu.menuItems) {
-            os << item.second;
+            os << *item.second;
         }
         return os;
     }

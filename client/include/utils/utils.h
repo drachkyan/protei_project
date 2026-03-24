@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Network/AppSettings.h"
-
 #include <nlohmann/json.hpp>
 #include "../../include/utils/utils.h"
 

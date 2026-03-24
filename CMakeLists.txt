@@ -39,6 +39,12 @@ set(CLIENT_SOURCES
         client/src/utils/utils.cpp
         client/src/Network/NetworkAddress.cpp
         client/src/Network/NetworkClient.cpp
+        client/src/Model/MenuItem.cpp
+        client/include/Model/MenuItem.h
+        client/include/Model/MenuItems/AddVectorItem.h
+        client/include/Model/MenuItems/PrintVectorItem.h
+        client/include/Model/MenuItems/QuitItem.h
+        client/include/Model/MenuItems/SendVectorItem.h
 )
 
 # ================

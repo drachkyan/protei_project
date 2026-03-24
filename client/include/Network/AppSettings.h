@@ -46,7 +46,7 @@ class AppSettings {
 public:
     ~AppSettings() = default;
     bool verifySettings() const;
-    AppSettings(std::string port_, std::string addr_, std::string lib_, Role role_, int64_t i_,std::string username_);
+    AppSettings(std::string port_, std::string addr_, std::string lib_, Role role_, std::string username_);
     AppSettings();
     void printSettings() const;
     void setUsername(std::string username_);

@@ -6,14 +6,18 @@
 
 ``` 
 sudo apt install liburing-dev pkg-config
-cmake .
-cmake --build .
+cmake -B build .
+cmake --build build
+```
+Тесты
+``` 
+./build/run_tests
 ```
 
 Запуск
 ``` 
-./myApp_server -p 8080
-./myApp_client -i 127.0.0.1 -p 8080
+./build/myApp_server -p 8080
+./build/myApp_client -i 127.0.0.1 -p 8080
 ```
 ## Работа в меню
 

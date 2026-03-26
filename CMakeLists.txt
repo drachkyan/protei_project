@@ -12,10 +12,10 @@ FetchContent_Declare(spdlog
         GIT_TAG v1.16.0)
 FetchContent_MakeAvailable(spdlog)
 
-#FetchContent_Declare(googletest
-#        GIT_REPOSITORY https://github.com/google/googletest.git
-#        GIT_TAG v1.16.0)
-#FetchContent_MakeAvailable(googletest)
+FetchContent_Declare(googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.16.0)
+FetchContent_MakeAvailable(googletest)
 
 FetchContent_Declare(json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
@@ -54,6 +54,18 @@ set(SERVER_SOURCES
         server/src/model/ServerHandlers.cpp
 )
 
+# ================
+set(TEST_SOURCES
+        client/src/Network/NetworkAddress.cpp
+        client/src/Network/AppSettings.cpp
+        client/src/Test/ConnectionTest.cpp
+        client/src/Test/ResourceTest.cpp
+        client/src/utils/utils.cpp
+        myvector/src/MyVector.cpp
+        myvector/src/VectorFactory.cpp
+)
+
+
 # =================
 add_executable(myApp_client client/src/client_main.cpp ${CLIENT_SOURCES} ${MY_VECTOR})
 target_include_directories(myApp_client PRIVATE client/include myvector/include)
@@ -70,3 +82,15 @@ target_include_directories(myApp_server PRIVATE ${URING_INCLUDE_DIRS})
 target_link_libraries(myApp_server PRIVATE nlohmann_json::nlohmann_json)
 
 # =================
+
+add_executable(run_tests test/test.cpp ${TEST_SOURCES})
+target_include_directories(run_tests PRIVATE
+        client/include
+        myvector/include
+)
+target_link_libraries(run_tests PRIVATE
+        GTest::gtest
+        GTest::gtest_main
+        nlohmann_json::nlohmann_json
+        spdlog::spdlog
+)

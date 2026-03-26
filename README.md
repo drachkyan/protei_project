@@ -9,9 +9,16 @@ sudo apt install liburing-dev pkg-config
 cmake -B build .
 cmake --build build
 ```
+
 Тесты
 ``` 
 ./build/run_tests
+```
+небольшой нагрузочный тест (Copyright evelinabis)
+лучше из нескольких терминалов
+``` 
+chmod +x test.sh
+./test.sh
 ```
 
 Запуск
